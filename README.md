@@ -15,12 +15,22 @@ service.delete("name");                      // true
 
 `service.execute("SET name redust".into())` runs a command string (`SET`, `GET`, `DELETE`). Command names are case-insensitive, keys aren't.
 
-`cargo run` starts a prompt where you can type those commands directly. `exit` or Ctrl-D quits. More in [docs/usage.md](docs/usage.md).
+`cargo run` starts a TCP server on `127.0.0.1:1234`. Send it one command per connection:
+
+```
+echo "SET name redust" | nc 127.0.0.1 1234   # OK
+echo "GET name" | nc 127.0.0.1 1234          # redust
+```
+
+There is also an interactive prompt (`InteractiveMode` in `command.rs`) where you type the same commands directly. `exit` or Ctrl-D quits. `main` currently starts the server, so the prompt isn't wired into `cargo run` yet.
+
+More in [docs/usage.md](docs/usage.md).
 
 ## Layout
 
 - `service.rs`: public API (`set`, `get`, `delete`, `execute`)
-- `command.rs`: the `Commands` enum and the interactive prompt
+- `server.rs`: the TCP server (`RedustServer`)
+- `command.rs`: the `Commands` enum and the interactive prompt (`InteractiveMode`)
 - `codec.rs`: converts values between `String` and bytes
 - `database.rs`: the in-memory `HashMap` store
 
