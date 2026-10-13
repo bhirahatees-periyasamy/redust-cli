@@ -9,6 +9,11 @@ impl InteractiveMode {
         Self
     }
 
+    /// Runs the interactive prompt loop until the user exits.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the line editor cannot be initialized.
     pub fn read_cmd(&self) -> Result<()> {
         let mut rl = DefaultEditor::new()?;
 
