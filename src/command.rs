@@ -7,9 +7,8 @@ pub enum Commands {
     SET,
     GET,
     DELETE,
-    None
+    None,
 }
-
 
 #[derive(Default)]
 pub struct InteractiveMode;

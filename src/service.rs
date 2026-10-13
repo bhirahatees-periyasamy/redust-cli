@@ -1,7 +1,6 @@
 use crate::codec::{Codec, CodecOperations};
-use crate::database::{Database, Operations};
 use crate::command::Commands;
-
+use crate::database::{Database, Operations};
 
 #[derive(Default)]
 pub struct RedustService {
@@ -16,7 +15,7 @@ pub trait ServiceOperations {
 
     fn delete(&mut self, key: &str) -> bool;
 
-    fn execute(&mut self, cmd: String) -> String; 
+    fn execute(&mut self, cmd: String) -> String;
 
     fn find_operation(&mut self, partial_cmd: &str) -> Commands;
 
@@ -44,7 +43,7 @@ impl ServiceOperations for RedustService {
 
         match value {
             Some(val) => val,
-            None => String::from("None")
+            None => String::from("None"),
         }
     }
 
@@ -77,25 +76,19 @@ impl ServiceOperations for RedustService {
         };
         let command = self.find_operation(partial_cmd);
         match command {
-            Commands::SET => {
-                match value {
-                    Some(value) => {
-                        self.set(key.to_string(), value.to_string())
-                    }
-                    None => "SET requires a key and value".to_string(),
-                }            },
-            Commands::GET => {
-                self.get(key)
+            Commands::SET => match value {
+                Some(value) => self.set(key.to_string(), value.to_string()),
+                None => "SET requires a key and value".to_string(),
             },
+            Commands::GET => self.get(key),
             Commands::DELETE => {
-               if self.delete(key)  {
-                   return String::from("OK")
-               }
-               String::from("None")
+                if self.delete(key) {
+                    return String::from("OK");
+                }
+                String::from("None")
             }
             Commands::None => "Invalid command".to_string(),
         }
-
     }
 }
 
@@ -188,7 +181,10 @@ mod tests {
     #[test]
     fn execute_set_without_value_is_error() {
         let mut svc = RedustService::new();
-        assert_eq!(svc.execute("SET k".to_string()), "SET requires a key and value");
+        assert_eq!(
+            svc.execute("SET k".to_string()),
+            "SET requires a key and value"
+        );
     }
 
     #[test]
