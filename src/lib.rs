@@ -1,5 +1,5 @@
 pub mod codec;
-pub mod command;
+pub mod cli;
 pub mod database;
 pub mod errors;
 pub mod server;

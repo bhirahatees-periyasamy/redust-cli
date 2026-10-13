@@ -1,5 +1,5 @@
 use crate::codec::{Codec, CodecOperations};
-use crate::command::Commands;
+use crate::cli::Commands;
 use crate::database::{Database, Operations};
 
 #[derive(Default)]
