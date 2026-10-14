@@ -15,14 +15,23 @@ service.delete("name");                      // true
 
 `service.execute("SET name redust".into())` runs a command string (`SET`, `GET`, `DELETE`). Command names are case-insensitive, keys aren't.
 
-`cargo run` starts a TCP server on `127.0.0.1:1234`. Send it one command per connection:
+`redust-server` starts a TCP server (default `127.0.0.1:6380`). Send it one command per connection:
 
 ```
-echo "SET name redust" | nc 127.0.0.1 1234   # OK
-echo "GET name" | nc 127.0.0.1 1234          # redust
+cargo run --bin redust-server                # or: cargo run --bin redust-server -- -H 0.0.0.0 -p 7000
+cargo run --bin redust-server -- --detach    # run in the background, logs go to redust-server.log
+
+echo "SET name redust" | nc 127.0.0.1 6380   # OK
+echo "GET name" | nc 127.0.0.1 6380          # redust
 ```
 
-There is also an interactive prompt (`InteractiveMode` in `command.rs`) where you type the same commands directly. `exit` or Ctrl-D quits. `main` currently starts the server, so the prompt isn't wired into `cargo run` yet.
+| Flag                | Default     | Meaning                                  |
+| ------------------- | ----------- | ---------------------------------------- |
+| `-H`, `--host <ip>` | `127.0.0.1` | address to bind to                       |
+| `-p`, `--port <n>`  | `6380`      | port to listen on                        |
+| `-d`, `--detach`    | off         | run in the background (Unix, uses `setsid`) |
+
+There is also an interactive prompt (`InteractiveMode` in `command.rs`) where you type the same commands directly. `exit` or Ctrl-D quits. The plain `redust` binary (`src/main.rs`) still starts a server on `127.0.0.1:1234`; the prompt isn't wired into either binary yet.
 
 More in [docs/usage.md](docs/usage.md).
 
@@ -30,6 +39,7 @@ More in [docs/usage.md](docs/usage.md).
 
 - `service.rs`: public API (`set`, `get`, `delete`, `execute`)
 - `server.rs`: the TCP server (`RedustServer`)
+- `bin/redust-server.rs`: the `redust-server` binary (flags, detach mode)
 - `command.rs`: the `Commands` enum and the interactive prompt (`InteractiveMode`)
 - `codec.rs`: converts values between `String` and bytes
 - `database.rs`: the in-memory `HashMap` store
@@ -37,7 +47,7 @@ More in [docs/usage.md](docs/usage.md).
 ## Development
 
 ```
-cargo run
+cargo run --bin redust-server
 cargo test
 cargo fmt
 cargo clippy --all-targets -- -D warnings
