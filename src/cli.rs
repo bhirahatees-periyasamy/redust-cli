@@ -1,7 +1,8 @@
 use rustyline::error::ReadlineError;
 use rustyline::{DefaultEditor, Result};
 
-use crate::service::{RedustService, ServiceOperations};
+use crate::client::RedustClient;
+use crate::config::read_address;
 
 pub enum Commands {
     SET,
@@ -24,8 +25,9 @@ impl InteractiveMode {
     ///
     /// Returns an error if the line editor cannot be initialized.
     pub fn read_cmd(&self) -> Result<()> {
+        let address = read_address()?;
         let mut rl = DefaultEditor::new()?;
-        let mut service = RedustService::new();
+        let mut client = RedustClient::connect(&address)?;
 
         loop {
             let readline = rl.readline("redust> ");
@@ -39,7 +41,7 @@ impl InteractiveMode {
                         break;
                     }
                     let _ = rl.add_history_entry(line);
-                    println!("{}", service.execute(line.to_string()));
+                    println!("{}", client.execute(line)?);
                 }
                 Err(ReadlineError::Interrupted) => {
                     println!("Ctrl-C");

@@ -1,4 +1,5 @@
 use crate::codec::{Codec, CodecOperations};
+use crate::config::write_address;
 use crate::service::{RedustService, ServiceOperations};
 use std::io::{self, Read, Write};
 use std::net::TcpListener;
@@ -19,6 +20,10 @@ impl RedustServer {
         let address = format!("{host}:{port}");
         let listener = TcpListener::bind(address)?;
         println!("Starting Redust Server on {host}:{port}");
+
+        let actual_addr = listener.local_addr()?;
+        let _ = write_address(&actual_addr.to_string())?;
+
         Ok(Self {
             host,
             port,
