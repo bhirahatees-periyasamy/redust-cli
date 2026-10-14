@@ -1,4 +1,3 @@
-
 use clap::Parser;
 use redust::server::RedustServer;
 use std::{
